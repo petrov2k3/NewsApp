@@ -12,7 +12,9 @@ class CategoriesViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Do any additional setup after loading the view.
+        view.backgroundColor = UIColor.cyan
+        //view.backgroundColor = .systemBackground
+        navigationItem.title = "Категорії"
     }
     
 
