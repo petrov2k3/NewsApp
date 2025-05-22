@@ -22,7 +22,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let window = UIWindow(windowScene: windowScene)
         
         //VC
-        let homeVC = HomeViewController() // стартовый экран
+        let homeVC = HomeViewController() // start screen
         let categoriesVC = CategoriesViewController()
         
         //MARK: - nav
@@ -43,8 +43,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         //MARK: - tabBar
         let tabBarVC = UITabBarController()
         tabBarVC.setViewControllers([homeNavController, categoryNavController], animated: true)
-        tabBarVC.tabBar.backgroundColor = .white
-        //tabBarVC.tabBar.backgroundColor = .systemBackground
+        
+        tabBarVC.tabBar.backgroundColor = .systemBackground
         
         //window.rootViewController = UINavigationController(rootViewController: homeVC)
         window.rootViewController = tabBarVC

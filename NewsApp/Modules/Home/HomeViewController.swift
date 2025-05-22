@@ -9,61 +9,54 @@ import UIKit
 
 class HomeViewController: UIViewController {
     
-    private var tableView = UITableView()
     private let cellIdentifier = "NewsCell"
     
-    private var newsArray = ["Title 1", "Title 2", "Title 3", "Title 4", "Title 5", "Title 6", "Title 7", "Title 8", "Title 9"]
+    private lazy var tableView: UITableView = {
+        let table = UITableView(frame: .zero, style: .plain)
+        table.register(UITableViewCell.self, forCellReuseIdentifier: cellIdentifier)
+        
+        // subscribe to protocols; delegate and pass information to this controller (self)
+        table.delegate = self
+        table.dataSource = self
+        
+        table.translatesAutoresizingMaskIntoConstraints = false
+        
+        return table
+    }()
+    
+    private let newsArray = [
+        "Title 1", "Title 2", "Title 3", "Title 4", "Title 5",
+        "Title 6", "Title 7", "Title 8", "Title 9"
+    ]
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        view.backgroundColor = UIColor.yellow
-        //view.backgroundColor = .systemBackground
+        configureView()
+        setupTableView()
+    }
+    
+    private func configureView() {
+        view.backgroundColor = .systemBackground
         navigationItem.title = "Головна"
-        
-        //title = "Головна"
-        
-        //setupUI()
-        
-        createTable()
     }
     
-    func createTable() {
-        self.tableView = UITableView(frame: view.bounds, style: .plain)
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: cellIdentifier)
-        
-        // подписываемся на протоколы; делегируем и передаём информацию этому контроллеру (self)
-        self.tableView.delegate = self
-        self.tableView.dataSource = self
-        
-        tableView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        
+    private func setupTableView() {
         view.addSubview(tableView)
+        NSLayoutConstraint.activate([
+            tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            tableView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+            tableView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+            tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
+        ])
     }
-    
-    
-    
-    
-    
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
 }
+
+//MARK: - UITableViewDataSource & UITableViewDelegate
 
 extension HomeViewController: UITableViewDataSource, UITableViewDelegate {
     
-    //MARK: - UITableViewDataSource
-    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        
         return newsArray.count
     }
     
@@ -71,66 +64,20 @@ extension HomeViewController: UITableViewDataSource, UITableViewDelegate {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier, for: indexPath)
         
-        let newsTitle = newsArray[indexPath.row]
-        
-        //cell.textLabel?.text = // deprecated
-        
         var config = cell.defaultContentConfiguration()
-        config.text = newsTitle
+        config.text = newsArray[indexPath.row]
         config.secondaryText = "Description \(indexPath.row + 1)"
         cell.contentConfiguration = config
-        
-        /*
-        cell.accessoryType = .detailButton
-        
-        switch indexPath.section {
-        case 0:
-            cell.backgroundColor = UIColor.red
-        case 1:
-            cell.backgroundColor = UIColor.blue
-        case 2:
-            cell.backgroundColor = UIColor.orange
-        default:
-            break
-        }
-         */
         
         return cell
     }
     
-    //MARK: - UITableViewDelegate
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 70.0
     }
     
-    /*
-    func tableView(_ tableView: UITableView, accessoryButtonTappedForRowWith indexPath: IndexPath) {
-        print("Accessory path = ", indexPath)
-        
-        let ounerCell = tableView.cellForRow(at: indexPath)
-        
-        //print("Cell title = ", ounerCell?.textLabel?.text ?? "nil") // deprecated
-        
-        if let config = ounerCell?.contentConfiguration as? UIListContentConfiguration {
-            print("Cell title = \(config.text ?? "nil")")
-        } else {
-            print("Не удалось получить текст из contentConfiguration")
-        }
-        
-              
-    }
-     */
-    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        //print(indexPath.row)
-        
-        let number = newsArray[indexPath.row]
-        print(number)
-        
-        //print("Обрана новина: \(newsArray[indexPath.row])")
-        //tableView.deselectRow(at: indexPath, animated: true)
-        
-        
+        print("Selected news: \(newsArray[indexPath.row])")
+        tableView.deselectRow(at: indexPath, animated: true)
     }
 }
-
