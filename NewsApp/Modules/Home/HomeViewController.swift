@@ -134,23 +134,3 @@ extension HomeViewController: UITableViewDataSource, UITableViewDelegate {
     }
 }
 
-
-//line for testing commits
-
-//code 2
-/*
- 
-    code 2
-    code 2
-    code 2
- 
- */
-
-//code 3New
-/*
- 
-    code 3new
-    code 3new
-    code 3new
- 
- */
