@@ -29,11 +29,59 @@ class HomeViewController: UIViewController {
         "Title 6", "Title 7", "Title 8", "Title 9"
     ]
     
+    var dataSource = [Post]()
+    
+    let sessionConfiguration = URLSessionConfiguration.default
+    //sessionConfiguration.timeoutIntervalForRequest
+    //sessionConfiguration.timeoutIntervalForResource
+    //let session = URLSession(configuration: sessionConfiguration)
+    let session = URLSession.shared
+    let decoder = JSONDecoder()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
         configureView()
         setupTableView()
+        
+        obtainPosts()
+        
+    }
+    
+    //MARK: - Network
+    //TODO: design it more architecturally correct
+    
+    func obtainPosts() {
+        guard let url = URL(string: "https://jsonplaceholder.typicode.com/posts") else {
+            return
+        }
+        
+        //UIApplication.shared.canOpenURL(<#T##url: URL##URL#>)
+        
+        session.dataTask(with: url) { [weak self] data, response, error in
+            
+            guard let strongSelf = self else { return }
+            
+            if error == nil, let parsData = data {
+                
+                //TODO: make decoder with try catch
+                guard let posts = try? strongSelf.decoder.decode([Post].self, from: parsData) else {
+                    return
+                }
+                
+                //print("Posts: \(posts?.count)")
+                
+                strongSelf.dataSource = posts
+                
+                DispatchQueue.main.async {
+                    strongSelf.tableView.reloadData()
+                }
+                
+            } else {
+                print("Error: \(error?.localizedDescription ?? "error nil")")
+            }
+            
+        }.resume()
     }
     
     private func configureView() {
@@ -57,27 +105,33 @@ class HomeViewController: UIViewController {
 extension HomeViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return newsArray.count
+        //return newsArray.count
+        return dataSource.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier, for: indexPath)
         
+        let post = dataSource[indexPath.row]
+        
         var config = cell.defaultContentConfiguration()
-        config.text = newsArray[indexPath.row]
-        config.secondaryText = "Description \(indexPath.row + 1)"
+        //config.text = newsArray[indexPath.row]
+        //config.secondaryText = "Description \(indexPath.row + 1)"
+        config.text = post.title
+        config.secondaryText = post.body
         cell.contentConfiguration = config
         
         return cell
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 70.0
+        return 80.0
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        print("Selected news: \(newsArray[indexPath.row])")
+        //print("Selected news: \(newsArray[indexPath.row])")
+        print("Selected post: \(dataSource[indexPath.row])")
         tableView.deselectRow(at: indexPath, animated: true)
     }
 }
