@@ -7,8 +7,8 @@
 
 import Foundation
 
-enum ObtainPostsResult {
-    case success(posts: [Post])
+enum ObtainNewsResult {
+    case success(articles: [Article])
     case failure(error: Error)
 }
 
@@ -21,9 +21,12 @@ class NetworkManager {
     let session = URLSession.shared
     let decoder = JSONDecoder()
     
+    //TODO: make valid date format
+    //decoder.dateDecodingStrategy = .iso8601
+    
     //func obtainPosts(successCompletion: @escaping ([Post]) -> Void, failureCompletion: @escaping (Error) -> Void) {
-    func obtainPosts(completion: @escaping (ObtainPostsResult) -> Void) {
-        guard let url = URL(string: "https://jsonplaceholder.typicode.com/posts") else {
+    func obtainNews(completion: @escaping (ObtainNewsResult) -> Void) {
+        guard let url = URL(string: "https://newsapi.org/v2/everything?q=apple&from=2025-05-23&to=2025-05-23&sortBy=popularity&apiKey") else {
             return
         }
         
@@ -31,7 +34,7 @@ class NetworkManager {
         
         session.dataTask(with: url) { [weak self] data, response, error in
             
-            var result: ObtainPostsResult
+            var result: ObtainNewsResult
             
             // блок который сработает в любом случае при любом оконачании (любом ретурне)
             defer {
@@ -42,21 +45,34 @@ class NetworkManager {
             
             guard let strongSelf = self else {
                 //completion([])
-                result = .success(posts: [])
+                result = .success(articles: [])
                 
                 return
             }
             
-            if error == nil, let parsData = data {
+            if let data = data, error == nil {
                 
-                //TODO: make decoder with try catch
-                guard let posts = try? strongSelf.decoder.decode([Post].self, from: parsData) else {
+                if let jsonString = String(data: data, encoding: .utf8) {
+                    print("Raw JSON:\n\(jsonString)")
+                }
+                
+                do {
+                    let response = try strongSelf.decoder.decode(NewsResponse.self, from: data)
+                    result = .success(articles: response.articles)
+                } catch {
+                    print("Decode error: \(error.localizedDescription)")
+                    result = .failure(error: error)
+                }
+                
+                
+                /*
+                //TODO: make decoder with try catch (seems like done)
+                guard let news = try? strongSelf.decoder.decode([News].self, from: parsData) else {
                     //completion([])
-                    result = .success(posts: [])
+                    result = .success(news: [])
                     return
                 }
                 
-                /*
                 strongSelf.dataSource = posts
                 
                 DispatchQueue.main.async {
@@ -66,14 +82,15 @@ class NetworkManager {
                 
                 //completion(posts)
                 
-                result = .success(posts: posts)
+                //result = .success(news: news)
                 
             } else {
                 //completion([])
                 //print("Error: \(error?.localizedDescription ?? "error nil")")
                 //failureCompletion(error!)
                 
-                result = .failure(error: error!)
+                //result = .failure(error: error!)
+                result = .failure(error: error ?? NSError(domain: "Unknown error", code: -1))
             }
             
             

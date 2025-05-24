@@ -7,6 +7,7 @@
 
 import Foundation
 
+/*
 struct Post: Codable {
     let userId: Int
     let postId: Int
@@ -20,3 +21,4 @@ struct Post: Codable {
         case body
     }
 }
+*/

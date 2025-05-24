@@ -29,7 +29,7 @@ class HomeViewController: UIViewController {
         "Title 6", "Title 7", "Title 8", "Title 9"
     ]
     
-    var dataSource = [Post]()
+    var dataSource = [Article]()
     
     let networkManager = NetworkManager()
     
@@ -49,16 +49,31 @@ class HomeViewController: UIViewController {
         }
          */
 
+        /*
         networkManager.obtainPosts { [weak self] result in
             switch result {
-            case .success(let posts):
-                self?.dataSource = posts
+            case .success(let news):
+                self?.dataSource = news
                 
                 DispatchQueue.main.async {
                     self?.tableView.reloadData()
                 }
             case .failure(let error):
                 print("Error: \(error.localizedDescription)")
+            }
+        }
+        */
+        
+        networkManager.obtainNews { [weak self] result in
+            switch result {
+            case .success(let articles):
+                self?.dataSource = articles
+                
+                DispatchQueue.main.async {
+                    self?.tableView.reloadData()
+                }
+            case .failure(let error):
+                print("News loading error: \(error.localizedDescription)")
             }
         }
     }
@@ -96,20 +111,20 @@ extension HomeViewController: UITableViewDataSource, UITableViewDelegate {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier, for: indexPath)
         
-        let post = dataSource[indexPath.row]
+        let article = dataSource[indexPath.row]
         
         var config = cell.defaultContentConfiguration()
         //config.text = newsArray[indexPath.row]
         //config.secondaryText = "Description \(indexPath.row + 1)"
-        config.text = post.title
-        config.secondaryText = post.body
+        config.text = article.title
+        config.secondaryText = article.description
         cell.contentConfiguration = config
         
         return cell
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 80.0
+        return 110.0
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
