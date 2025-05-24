@@ -31,12 +31,7 @@ class HomeViewController: UIViewController {
     
     var dataSource = [Post]()
     
-    let sessionConfiguration = URLSessionConfiguration.default
-    //sessionConfiguration.timeoutIntervalForRequest
-    //sessionConfiguration.timeoutIntervalForResource
-    //let session = URLSession(configuration: sessionConfiguration)
-    let session = URLSession.shared
-    let decoder = JSONDecoder()
+    let networkManager = NetworkManager()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -44,45 +39,33 @@ class HomeViewController: UIViewController {
         configureView()
         setupTableView()
         
-        obtainPosts()
+        //obtainPosts()
         
+        /*
+        networkManager.obtainPosts { posts in
+            <#code#>
+        } failureCompletion: { error in
+            <#code#>
+        }
+         */
+
+        networkManager.obtainPosts { [weak self] result in
+            switch result {
+            case .success(let posts):
+                self?.dataSource = posts
+                
+                DispatchQueue.main.async {
+                    self?.tableView.reloadData()
+                }
+            case .failure(let error):
+                print("Error: \(error.localizedDescription)")
+            }
+        }
     }
     
     //MARK: - Network
     //TODO: design it more architecturally correct
     
-    func obtainPosts() {
-        guard let url = URL(string: "https://jsonplaceholder.typicode.com/posts") else {
-            return
-        }
-        
-        //UIApplication.shared.canOpenURL(<#T##url: URL##URL#>)
-        
-        session.dataTask(with: url) { [weak self] data, response, error in
-            
-            guard let strongSelf = self else { return }
-            
-            if error == nil, let parsData = data {
-                
-                //TODO: make decoder with try catch
-                guard let posts = try? strongSelf.decoder.decode([Post].self, from: parsData) else {
-                    return
-                }
-                
-                //print("Posts: \(posts?.count)")
-                
-                strongSelf.dataSource = posts
-                
-                DispatchQueue.main.async {
-                    strongSelf.tableView.reloadData()
-                }
-                
-            } else {
-                print("Error: \(error?.localizedDescription ?? "error nil")")
-            }
-            
-        }.resume()
-    }
     
     private func configureView() {
         view.backgroundColor = .systemBackground
