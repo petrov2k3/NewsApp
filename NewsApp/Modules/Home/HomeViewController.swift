@@ -16,7 +16,7 @@ class HomeViewController: UIViewController {
         let table = UITableView()
         table.translatesAutoresizingMaskIntoConstraints = false
         
-        table.register(UITableViewCell.self, forCellReuseIdentifier: cellIdentifier)
+        table.register(NewsTableViewCell.self, forCellReuseIdentifier: cellIdentifier)
         
         table.delegate = self
         table.dataSource = self
@@ -74,14 +74,22 @@ extension HomeViewController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier, for: indexPath)
+        //let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier, for: indexPath)
+        
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier, for: indexPath) as? NewsTableViewCell else {
+            return UITableViewCell()
+        }
         
         let article = dataSource[indexPath.row]
         
+        /*
         var config = cell.defaultContentConfiguration()
         config.text = article.title
         config.secondaryText = article.description
         cell.contentConfiguration = config
+         */
+        
+        cell.configure(with: article)
         
         return cell
     }
