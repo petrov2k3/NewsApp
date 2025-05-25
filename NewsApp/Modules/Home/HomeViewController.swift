@@ -24,7 +24,7 @@ class HomeViewController: UIViewController {
         return table
     }()
     
-    let networkManager = NetworkManager()
+    //let networkManager = NetworkManager()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -41,6 +41,10 @@ class HomeViewController: UIViewController {
     
     private func setupTableView() {
         view.addSubview(tableView)
+        
+        //tableView.rowHeight = UITableView.automaticDimension
+        //tableView.estimatedRowHeight = 110
+        
         NSLayoutConstraint.activate([
             tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             tableView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
@@ -49,6 +53,7 @@ class HomeViewController: UIViewController {
         ])
     }
     
+    /*
     private func obtainNews() {
         networkManager.obtainNews { [weak self] result in
             switch result {
@@ -63,6 +68,19 @@ class HomeViewController: UIViewController {
             }
         }
     }
+     */
+    
+    private func obtainNews() {
+        NetworkManager.shared.request(.newsList) { [weak self] (result: Result<NewsResponse, APIError>) in
+            switch result {
+            case .success(let response):
+                self?.dataSource = response.articles
+                self?.tableView.reloadData()
+            case .failure(let error):
+                print("Error loading news:", error)
+            }
+        }
+    }
 }
 
 //MARK: - UITableViewDataSource & UITableViewDelegate
@@ -74,7 +92,6 @@ extension HomeViewController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        //let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier, for: indexPath)
         
         guard let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier, for: indexPath) as? NewsTableViewCell else {
             return UITableViewCell()

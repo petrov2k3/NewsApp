@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Kingfisher
 
 class NewsTableViewCell: UITableViewCell {
 
@@ -74,14 +75,28 @@ class NewsTableViewCell: UITableViewCell {
     func configure(with article: Article) {
         titleLabel.text = article.title
         descriptionLabel.text = article.description
+        newsImageView.kf.indicatorType = .activity
         
         if let urlString = article.urlToImage, let url = URL(string: urlString) {
-            loadImage(from: url)
+            newsImageView.kf.setImage(
+                with: url,
+                placeholder: UIImage(systemName: "photo"),
+                options: [
+                    .transition(.fade(0.2)),
+                    .cacheOriginalImage
+                ])
         } else {
             newsImageView.image = UIImage(systemName: "photo")
         }
     }
     
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        newsImageView.image = nil
+        newsImageView.kf.cancelDownloadTask() // отменяем загрузку, если ещё в процессе
+    }
+    
+    /*
     private func loadImage(from url: URL) {
         URLSession.shared.dataTask(with: url) { [weak self] data, _, _ in
             guard
@@ -95,6 +110,7 @@ class NewsTableViewCell: UITableViewCell {
             }
         }.resume()
     }
+    */
     
     /*
     override func awakeFromNib() {
