@@ -39,6 +39,8 @@ final class NetworkManager {
             
             // decode JSON
             do {
+                //print(String(data: data, encoding: .utf8) ?? "Failed to print raw JSON")
+
                 let decoded = try JSONDecoder().decode(T.self, from: data)
                 DispatchQueue.main.async {
                     completion(.success(decoded))

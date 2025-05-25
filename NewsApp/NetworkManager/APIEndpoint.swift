@@ -8,14 +8,14 @@
 import Foundation
 
 enum APIEndpoint {
-    case newsList
+    case newsList(query: String)
     
     var urlRequest: URLRequest {
         switch self {
-        case .newsList:
+        case .newsList(let query):
             var components = URLComponents(string: "https://newsapi.org/v2/everything")!
             components.queryItems = [
-                URLQueryItem(name: "q", value: "apple"),
+                URLQueryItem(name: "q", value: query),
                 //TODO: api key within secure plist ?
                 URLQueryItem(name: "apiKey", value: "")
             ]

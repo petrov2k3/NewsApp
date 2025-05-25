@@ -10,7 +10,23 @@ import UIKit
 class HomeViewController: UIViewController {
     
     private let cellIdentifier = "NewsCell"
+    
+    /*
+    private var isFiltering: Bool {
+        let searchController = navigationItem.searchController
+        return searchController?.isActive == true && !(searchController?.searchBar.text?.isEmpty ?? true)
+    }
+
+    private var dataSource: [Article] {
+        //return isFiltering ? filteredArticles : allArticles
+        return allArticles
+    }
+    */
+    
     private var dataSource = [Article]()
+    
+    //private var allArticles = [Article]() // всё, что приходит с API
+    //private var filteredArticles = [Article]() // отфильтрованные
     
     private lazy var tableView: UITableView = {
         let table = UITableView()
@@ -32,6 +48,14 @@ class HomeViewController: UIViewController {
         configureView()
         setupTableView()
         obtainNews()
+        
+        //search
+        let searchController = UISearchController(searchResultsController: nil)
+        searchController.obscuresBackgroundDuringPresentation = false
+        searchController.searchBar.placeholder = "Пошук новин"
+        searchController.searchResultsUpdater = self
+        navigationItem.searchController = searchController
+        definesPresentationContext = true
     }
     
     private func configureView() {
@@ -71,9 +95,10 @@ class HomeViewController: UIViewController {
      */
     
     private func obtainNews() {
-        NetworkManager.shared.request(.newsList) { [weak self] (result: Result<NewsResponse, APIError>) in
+        NetworkManager.shared.request(.newsList(query: "apple")) { [weak self] (result: Result<NewsResponse, APIError>) in
             switch result {
             case .success(let response):
+                //self?.dataSource = response.articles
                 self?.dataSource = response.articles
                 self?.tableView.reloadData()
             case .failure(let error):
@@ -119,4 +144,44 @@ extension HomeViewController: UITableViewDataSource, UITableViewDelegate {
         print("Selected article: \(dataSource[indexPath.row])")
         tableView.deselectRow(at: indexPath, animated: true)
     }
+}
+
+//MARK: - UISearchResultsUpdating
+
+extension HomeViewController: UISearchResultsUpdating {
+    func updateSearchResults(for searchController: UISearchController) {
+        guard let query = searchController.searchBar.text,
+              !query.trimmingCharacters(in: .whitespaces).isEmpty else {
+            dataSource = []
+            tableView.reloadData()
+            return
+        }
+        
+        NetworkManager.shared.request(.newsList(query: query)) { [weak self] (result: Result<NewsResponse, APIError>) in
+            switch result {
+            case .success(let response):
+                self?.dataSource = response.articles
+                self?.tableView.reloadData()
+            case .failure(let error):
+                print("Search API error:", error)
+            }
+        }
+    }
+    
+    /*
+    func updateSearchResults(for searchController: UISearchController) {
+        guard let query = searchController.searchBar.text?.lowercased(), !query.isEmpty else {
+            filteredArticles = []
+            tableView.reloadData()
+            return
+        }
+
+        filteredArticles = allArticles.filter {
+            $0.title.lowercased().contains(query) ||
+            ($0.description?.lowercased().contains(query) ?? false)
+        }
+
+        tableView.reloadData()
+    }
+    */
 }

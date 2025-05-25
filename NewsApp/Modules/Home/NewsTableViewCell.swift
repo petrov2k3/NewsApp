@@ -73,7 +73,7 @@ class NewsTableViewCell: UITableViewCell {
     }
     
     func configure(with article: Article) {
-        titleLabel.text = article.title
+        titleLabel.text = article.title ?? "No title"
         descriptionLabel.text = article.description
         newsImageView.kf.indicatorType = .activity
         
