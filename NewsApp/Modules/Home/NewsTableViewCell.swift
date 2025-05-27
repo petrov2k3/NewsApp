@@ -93,7 +93,7 @@ class NewsTableViewCell: UITableViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         newsImageView.image = nil
-        newsImageView.kf.cancelDownloadTask() // отменяем загрузку, если ещё в процессе
+        newsImageView.kf.cancelDownloadTask() // cancel download if it's still in progress
     }
     
     /*

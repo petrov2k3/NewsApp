@@ -53,7 +53,8 @@ class HomeViewController: UIViewController {
         let searchController = UISearchController(searchResultsController: nil)
         searchController.obscuresBackgroundDuringPresentation = false
         searchController.searchBar.placeholder = "Пошук новин"
-        searchController.searchResultsUpdater = self
+        //searchController.searchResultsUpdater = self
+        searchController.searchBar.delegate = self
         navigationItem.searchController = searchController
         definesPresentationContext = true
     }
@@ -148,6 +149,28 @@ extension HomeViewController: UITableViewDataSource, UITableViewDelegate {
 
 //MARK: - UISearchResultsUpdating
 
+extension HomeViewController: UISearchBarDelegate {
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        guard let query = searchBar.text?.trimmingCharacters(in: .whitespacesAndNewlines),
+              !query.isEmpty else {
+            return
+        }
+        
+        NetworkManager.shared.request(.newsList(query: query)) { [weak self] (result: Result<NewsResponse, APIError>) in
+            switch result {
+            case .success(let response):
+                self?.dataSource = response.articles
+                self?.tableView.reloadData()
+            case .failure(let error):
+                print("Search API error:", error)
+            }
+        }
+        
+        searchBar.resignFirstResponder() // hides keyboard
+    }
+}
+
+/*
 extension HomeViewController: UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
         guard let query = searchController.searchBar.text,
@@ -169,6 +192,7 @@ extension HomeViewController: UISearchResultsUpdating {
     }
     
     /*
+     // делал с фильтрацией начального запроса
     func updateSearchResults(for searchController: UISearchController) {
         guard let query = searchController.searchBar.text?.lowercased(), !query.isEmpty else {
             filteredArticles = []
@@ -185,3 +209,4 @@ extension HomeViewController: UISearchResultsUpdating {
     }
     */
 }
+*/
