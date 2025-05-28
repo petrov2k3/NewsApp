@@ -99,7 +99,6 @@ class HomeViewController: UIViewController {
         NetworkManager.shared.request(.newsList(query: "apple")) { [weak self] (result: Result<NewsResponse, APIError>) in
             switch result {
             case .success(let response):
-                //self?.dataSource = response.articles
                 self?.dataSource = response.articles
                 self?.tableView.reloadData()
             case .failure(let error):
