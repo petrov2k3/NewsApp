@@ -7,44 +7,18 @@
 
 import Foundation
 
-protocol CategoriesViewProtocol: AnyObject {
-    func showCategories(_ categories: [String])
-    func showError(_ message: String)
+protocol CategoriesPresenter {
+    func viewDidLoad()
+    func didSelectCategory(at index: Int) -> String
 }
 
-final class CategoriesPresenter {
-    
-    // MARK: - Properties
-    
-    weak var view: CategoriesViewProtocol?
-    private let networkManager: NetworkManager
+final class CategoriesPresenterImpl {
+    private weak var view: CategoriesViewController?
     
     private let categories = ["business", "entertainment", "general", "health", "science", "sports", "technology"]
     
-    // MARK: - Init
-    
-    init(view: CategoriesViewProtocol? = nil, networkManager: NetworkManager = .shared) {
-        self.view = view
-        self.networkManager = networkManager
-    }
-    
-    // MARK: - Public methods
-    
-    func viewDidLoad() {
-        loadCategories()
-    }
-    
-    func didSelectCategory(at index: Int) -> String {
-        return categories[index]
-    }
-    
-    // MARK: - Private methods
-    
     private func loadCategories() {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
-            guard let self = self else { return }
-            self.view?.showCategories(self.categories)
-        }
+        self.view?.showCategories(self.categories)
     }
     
     /*
@@ -67,4 +41,22 @@ final class CategoriesPresenter {
         }
     }
     */
+}
+
+// MARK: - Public methods
+extension CategoriesPresenterImpl {
+    func setupView(_ view: CategoriesViewController) {
+        self.view = view
+    }
+}
+
+// MARK: - CategoriesPresenter
+extension CategoriesPresenterImpl: CategoriesPresenter {
+    func viewDidLoad() {
+        loadCategories()
+    }
+    
+    func didSelectCategory(at index: Int) -> String {
+        return categories[index]
+    }
 }
