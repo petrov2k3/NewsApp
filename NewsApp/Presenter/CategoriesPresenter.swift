@@ -9,8 +9,6 @@ import Foundation
 
 protocol CategoriesViewProtocol: AnyObject {
     func showCategories(_ categories: [String])
-    func showNews(_ articles: [Article])
-    func showLoading(_ isLoading: Bool)
     func showError(_ message: String)
 }
 
@@ -20,27 +18,20 @@ final class CategoriesPresenter {
     
     weak var view: CategoriesViewProtocol?
     private let networkManager: NetworkManager
-    private let mode: CategoriesViewController.Mode
     
     private let categories = ["business", "entertainment", "general", "health", "science", "sports", "technology"]
     
     // MARK: - Init
     
-    init(view: CategoriesViewProtocol? = nil, networkManager: NetworkManager = .shared, mode: CategoriesViewController.Mode) {
+    init(view: CategoriesViewProtocol? = nil, networkManager: NetworkManager = .shared) {
         self.view = view
         self.networkManager = networkManager
-        self.mode = mode
     }
     
     // MARK: - Public methods
     
     func viewDidLoad() {
-        switch mode {
-        case .list:
-            loadCategories()
-        case .news(let category):
-            loadNews(for: category)
-        }
+        loadCategories()
     }
     
     func didSelectCategory(at index: Int) -> String {
@@ -50,26 +41,14 @@ final class CategoriesPresenter {
     // MARK: - Private methods
     
     private func loadCategories() {
-        view?.showLoading(true)
-        
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
             guard let self = self else { return }
-            self.view?.showLoading(false)
             self.view?.showCategories(self.categories)
         }
     }
     
     /*
-    func loadCategories() {
-        view?.showLoading(true)
-        // симулируем задержку для примера
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
-            self?.view?.showLoading(false)
-            self?.view?.showCategories(self?.categories ?? [])
-        }
-    }
-     */
-    
+    // will move to HomePresenter later i think
     private func loadNews(for category: String) {
         view?.showLoading(true)
         
@@ -87,4 +66,5 @@ final class CategoriesPresenter {
             }
         }
     }
+    */
 }
