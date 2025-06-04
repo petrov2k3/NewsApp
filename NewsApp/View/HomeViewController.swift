@@ -10,10 +10,22 @@ import UIKit
 class HomeViewController: UIViewController {
     
     // MARK: - Properties
-    
     private let cellIdentifier = "NewsCell"
     private let category: String?
     private var dataSource = [Article]()
+    //let networkManager = NetworkManager()
+    
+    // MARK: - UI
+    private lazy var searchController: UISearchController = {
+        let search = UISearchController(searchResultsController: nil)
+        
+        search.obscuresBackgroundDuringPresentation = false
+        search.searchBar.placeholder = "Пошук новин"
+        
+        search.searchBar.delegate = self
+        
+        return search
+    }()
     
     private lazy var tableView: UITableView = {
         let table = UITableView()
@@ -27,10 +39,7 @@ class HomeViewController: UIViewController {
         return table
     }()
     
-    //let networkManager = NetworkManager()
-    
     //MARK: - Inits
-    
     init(category: String? = nil) {
         self.category = category
         super.init(nibName: nil, bundle: nil)
@@ -41,7 +50,6 @@ class HomeViewController: UIViewController {
     }
     
     //MARK: - Lifecycles
-    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -50,17 +58,13 @@ class HomeViewController: UIViewController {
         obtainNews()
         
         //search
-        let searchController = UISearchController(searchResultsController: nil)
-        searchController.obscuresBackgroundDuringPresentation = false
-        searchController.searchBar.placeholder = "Пошук новин"
-        //searchController.searchResultsUpdater = self
-        searchController.searchBar.delegate = self
-        navigationItem.searchController = searchController
-        definesPresentationContext = true
+        if category == nil {
+            navigationItem.searchController = searchController
+            definesPresentationContext = true
+        }
     }
     
-    //MARK: - Methods
-    
+    //MARK: - Setup UI
     private func configureView() {
         view.backgroundColor = .systemBackground
         navigationItem.title = category?.capitalized ?? "Головна"
@@ -97,6 +101,7 @@ class HomeViewController: UIViewController {
     }
      */
     
+    //TODO: move to its presenter (next goal)
     private func obtainNews() {
         if let category = category {
             NetworkManager.shared.request(.topHeadlines(category: category)) { [weak self] (result: Result<NewsResponse, APIError>) in
@@ -137,14 +142,6 @@ extension HomeViewController: UITableViewDataSource, UITableViewDelegate {
         }
         
         let article = dataSource[indexPath.row]
-        
-        /*
-        var config = cell.defaultContentConfiguration()
-        config.text = article.title
-        config.secondaryText = article.description
-        cell.contentConfiguration = config
-         */
-        
         cell.configure(with: article)
         
         return cell
@@ -160,7 +157,7 @@ extension HomeViewController: UITableViewDataSource, UITableViewDelegate {
     }
 }
 
-//MARK: - UISearchResultsUpdating
+//MARK: - UISearchBarDelegate
 
 extension HomeViewController: UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
@@ -182,44 +179,3 @@ extension HomeViewController: UISearchBarDelegate {
         searchBar.resignFirstResponder() // hides keyboard
     }
 }
-
-/*
-extension HomeViewController: UISearchResultsUpdating {
-    func updateSearchResults(for searchController: UISearchController) {
-        guard let query = searchController.searchBar.text,
-              !query.trimmingCharacters(in: .whitespaces).isEmpty else {
-            dataSource = []
-            tableView.reloadData()
-            return
-        }
-        
-        NetworkManager.shared.request(.newsList(query: query)) { [weak self] (result: Result<NewsResponse, APIError>) in
-            switch result {
-            case .success(let response):
-                self?.dataSource = response.articles
-                self?.tableView.reloadData()
-            case .failure(let error):
-                print("Search API error:", error)
-            }
-        }
-    }
-    
-    /*
-     // делал с фильтрацией начального запроса
-    func updateSearchResults(for searchController: UISearchController) {
-        guard let query = searchController.searchBar.text?.lowercased(), !query.isEmpty else {
-            filteredArticles = []
-            tableView.reloadData()
-            return
-        }
-
-        filteredArticles = allArticles.filter {
-            $0.title.lowercased().contains(query) ||
-            ($0.description?.lowercased().contains(query) ?? false)
-        }
-
-        tableView.reloadData()
-    }
-    */
-}
-*/
