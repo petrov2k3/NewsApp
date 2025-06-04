@@ -9,24 +9,11 @@ import UIKit
 
 class HomeViewController: UIViewController {
     
+    // MARK: - Properties
+    
     private let cellIdentifier = "NewsCell"
-    
-    /*
-    private var isFiltering: Bool {
-        let searchController = navigationItem.searchController
-        return searchController?.isActive == true && !(searchController?.searchBar.text?.isEmpty ?? true)
-    }
-
-    private var dataSource: [Article] {
-        //return isFiltering ? filteredArticles : allArticles
-        return allArticles
-    }
-    */
-    
+    private let category: String?
     private var dataSource = [Article]()
-    
-    //private var allArticles = [Article]() // всё, что приходит с API
-    //private var filteredArticles = [Article]() // отфильтрованные
     
     private lazy var tableView: UITableView = {
         let table = UITableView()
@@ -41,6 +28,19 @@ class HomeViewController: UIViewController {
     }()
     
     //let networkManager = NetworkManager()
+    
+    //MARK: - Inits
+    
+    init(category: String? = nil) {
+        self.category = category
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    //MARK: - Lifecycles
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -59,9 +59,11 @@ class HomeViewController: UIViewController {
         definesPresentationContext = true
     }
     
+    //MARK: - Methods
+    
     private func configureView() {
         view.backgroundColor = .systemBackground
-        navigationItem.title = "Головна"
+        navigationItem.title = category?.capitalized ?? "Головна"
     }
     
     private func setupTableView() {
@@ -96,13 +98,25 @@ class HomeViewController: UIViewController {
      */
     
     private func obtainNews() {
-        NetworkManager.shared.request(.newsList(query: "apple")) { [weak self] (result: Result<NewsResponse, APIError>) in
-            switch result {
-            case .success(let response):
-                self?.dataSource = response.articles
-                self?.tableView.reloadData()
-            case .failure(let error):
-                print("Error loading news:", error)
+        if let category = category {
+            NetworkManager.shared.request(.topHeadlines(category: category)) { [weak self] (result: Result<NewsResponse, APIError>) in
+                switch result {
+                case .success(let response):
+                    self?.dataSource = response.articles
+                    self?.tableView.reloadData()
+                case .failure(let error):
+                    print("Error loading news by category:", error)
+                }
+            }
+        } else {
+            NetworkManager.shared.request(.newsList(query: "apple")) { [weak self] (result: Result<NewsResponse, APIError>) in
+                switch result {
+                case .success(let response):
+                    self?.dataSource = response.articles
+                    self?.tableView.reloadData()
+                case .failure(let error):
+                    print("Error loading general news:", error)
+                }
             }
         }
     }

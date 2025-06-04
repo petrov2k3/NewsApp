@@ -172,13 +172,18 @@ extension CategoriesViewController: UITableViewDataSource, UITableViewDelegate {
              */
             
             let selectedCategory = presenter.didSelectCategory(at: indexPath.row)
+            let homeVC = HomeViewController(category: selectedCategory)
+            
+            /*
             let newsByCategoryVC = CategoriesViewController(
                 mode: .news(category: selectedCategory),
                 presenter: CategoriesPresenter(view: nil, mode: .news(category: selectedCategory))
             )
             
             newsByCategoryVC.presenter.view = newsByCategoryVC
-            navigationController?.pushViewController(newsByCategoryVC, animated: true)
+             */
+             
+            navigationController?.pushViewController(homeVC, animated: true)
             
             
         case .news:

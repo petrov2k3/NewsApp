@@ -73,6 +73,7 @@ final class CategoriesPresenter {
     private func loadNews(for category: String) {
         view?.showLoading(true)
         
+        //TODO: think where to move this request (HomePresenter maybe idk)
         networkManager.request(.topHeadlines(category: category)) { [weak self] (result: Result<NewsResponse, APIError>) in
             guard let self = self else { return }
             
