@@ -20,37 +20,16 @@ final class CategoriesPresenterImpl {
     private func loadCategories() {
         self.view?.showCategories(self.categories)
     }
-    
-    /*
-    // will move to HomePresenter later i think
-    private func loadNews(for category: String) {
-        view?.showLoading(true)
-        
-        //TODO: think where to move this request (HomePresenter maybe idk)
-        networkManager.request(.topHeadlines(category: category)) { [weak self] (result: Result<NewsResponse, APIError>) in
-            guard let self = self else { return }
-            
-            self.view?.showLoading(false)
-            
-            switch result {
-            case .success(let response):
-                self.view?.showNews(response.articles)
-            case .failure(let error):
-                self.view?.showError("Error loading news for category \(category): \(error.localizedDescription)")
-            }
-        }
-    }
-    */
 }
 
-// MARK: - Public methods
+//MARK: - Public methods
 extension CategoriesPresenterImpl {
     func setupView(_ view: CategoriesViewController) {
         self.view = view
     }
 }
 
-// MARK: - CategoriesPresenter
+//MARK: - CategoriesPresenter
 extension CategoriesPresenterImpl: CategoriesPresenter {
     func viewDidLoad() {
         loadCategories()

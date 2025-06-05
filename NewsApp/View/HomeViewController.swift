@@ -7,13 +7,13 @@
 
 import UIKit
 
-// MARK: - Protocol
+//MARK: - Protocol
 protocol HomeViewController: AnyObject {
-    func showArticles(_ articles: [Article])
+    func showNews(_ articles: [Article])
     func showError(_ message: String)
 }
 
-// MARK: - Implementation
+//MARK: - Implementation
 final class HomeViewControllerImpl: UIViewController {
     
     // MARK: - Properties
@@ -22,7 +22,7 @@ final class HomeViewControllerImpl: UIViewController {
     private let category: String?
     private var dataSource = [Article]()
     
-    // MARK: - UI
+    //MARK: - UI
     private lazy var searchController: UISearchController = {
         let search = UISearchController(searchResultsController: nil)
         
@@ -139,7 +139,7 @@ extension HomeViewControllerImpl: UISearchBarDelegate {
 
 //MARK: - HomeViewController
 extension HomeViewControllerImpl: HomeViewController {
-    func showArticles(_ articles: [Article]) {
+    func showNews(_ articles: [Article]) {
         self.dataSource = articles
         tableView.reloadData()
     }

@@ -7,21 +7,21 @@
 
 import UIKit
 
-// MARK: - Protocol
+//MARK: - Protocol
 protocol CategoriesViewController: AnyObject {
     func showCategories(_ categories: [String])
     func showError(_ message: String)
 }
 
-// MARK: - Implementation
+//MARK: - Implementation
 final class CategoriesViewControllerImpl: UIViewController {
     
-    // MARK: - Properties
+    //MARK: - Properties
     private let presenter: CategoriesPresenter
     private var categories: [String] = []
     private let cellIdentifier = "CategoryCell"
     
-    // MARK: - UI
+    //MARK: - UI
     private lazy var tableView: UITableView = {
         let table = UITableView()
         table.translatesAutoresizingMaskIntoConstraints = false
@@ -34,7 +34,7 @@ final class CategoriesViewControllerImpl: UIViewController {
         return table
     }()
     
-    // MARK: - Inits
+    //MARK: - Inits
     init(presenter: CategoriesPresenter) {
         self.presenter = presenter
         super.init(nibName: nil, bundle: Bundle.main)
@@ -45,7 +45,7 @@ final class CategoriesViewControllerImpl: UIViewController {
     }
     
     
-    // MARK: - Lifecycles
+    //MARK: - Lifecycles
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -55,7 +55,7 @@ final class CategoriesViewControllerImpl: UIViewController {
         setupTableView()
     }
     
-    // MARK: - Setup UI
+    //MARK: - Setup UI
     private func configureView() {
         view.backgroundColor = .systemBackground
         navigationItem.title = "Categories"

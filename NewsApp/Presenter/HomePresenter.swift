@@ -32,7 +32,7 @@ final class HomePresenterImpl {
                 
                 switch result {
                 case .success(let response):
-                    self.view?.showArticles(response.articles)
+                    self.view?.showNews(response.articles)
                 case .failure(let error):
                     self.view?.showError("Error loading news by category: \(error.localizedDescription)")
                 }
@@ -43,7 +43,7 @@ final class HomePresenterImpl {
                 
                 switch result {
                 case .success(let response):
-                    self.view?.showArticles(response.articles)
+                    self.view?.showNews(response.articles)
                 case .failure(let error):
                     self.view?.showError("Error loading general news: \(error.localizedDescription)")
                 }
@@ -57,7 +57,7 @@ final class HomePresenterImpl {
             
             switch result {
             case .success(let response):
-                self.view?.showArticles(response.articles)
+                self.view?.showNews(response.articles)
             case .failure(let error):
                 self.view?.showError("Search API error: \(error.localizedDescription)")
             }
@@ -65,14 +65,14 @@ final class HomePresenterImpl {
     }
 }
 
-// MARK: - Public methods
+//MARK: - Public methods
 extension HomePresenterImpl {
     func setupView(_ view: HomeViewController) {
         self.view = view
     }
 }
 
-// MARK: - HomePresenter
+//MARK: - HomePresenter
 extension HomePresenterImpl: HomePresenter {
     func viewDidLoad() {
         obtainNews()

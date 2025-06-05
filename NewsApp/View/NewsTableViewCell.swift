@@ -38,7 +38,7 @@ class NewsTableViewCell: UITableViewCell {
         return label
     }()
     
-    // MARK: - Inits
+    //MARK: - Inits
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupUI()
