@@ -58,7 +58,7 @@ final class CategoriesViewControllerImpl: UIViewController {
     // MARK: - Setup UI
     private func configureView() {
         view.backgroundColor = .systemBackground
-        navigationItem.title = "Категорії"
+        navigationItem.title = "Categories"
     }
     
     private func setupTableView() {

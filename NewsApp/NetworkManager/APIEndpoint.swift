@@ -8,15 +8,15 @@
 import Foundation
 
 enum APIEndpoint {
-    case newsList(query: String)
+    case everything(query: String?)
     case topHeadlines(category: String)
     
     var urlRequest: URLRequest {
         switch self {
-        case .newsList(let query):
+        case .everything(let query):
             var components = URLComponents(string: "https://newsapi.org/v2/everything")!
             components.queryItems = [
-                URLQueryItem(name: "q", value: query),
+                URLQueryItem(name: "q", value: query ?? "apple"),
                 URLQueryItem(name: "apiKey", value: "")
             ]
             let url = components.url!

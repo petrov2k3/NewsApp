@@ -11,7 +11,6 @@ import Kingfisher
 class NewsTableViewCell: UITableViewCell {
 
     //MARK: - Creating elements
-    
     private let newsImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
@@ -39,8 +38,7 @@ class NewsTableViewCell: UITableViewCell {
         return label
     }()
     
-    // MARK: - Init
-    
+    // MARK: - Inits
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupUI()

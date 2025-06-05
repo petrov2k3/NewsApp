@@ -22,14 +22,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         //MARK: - Navigation
         let homeNavController = UINavigationController(rootViewController: homeVC)
         homeNavController.tabBarItem = UITabBarItem(
-            title: "Головна",
+            title: "Home",
             image: UIImage(systemName: "newspaper"),
             selectedImage: UIImage(systemName: "newspaper.fill")
         )
         
         let categoryNavController = UINavigationController(rootViewController: categoriesVC)
         categoryNavController.tabBarItem = UITabBarItem(
-            title: "Категорії",
+            title: "Categories",
             image: UIImage(systemName: "list.bullet.clipboard"),
             selectedImage: UIImage(systemName: "list.bullet.clipboard.fill")
         )
@@ -45,6 +45,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window.makeKeyAndVisible()
     }
 
+    //MARK: - Make VCs methods
     private func makeHomeViewController() -> UIViewController {
         let presenter = HomePresenterImpl(category: nil)
         let viewController = HomeViewControllerImpl(category: nil, presenter: presenter)
@@ -63,6 +64,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         return viewController
     }
     
+    //MARK: - Other
     func sceneDidDisconnect(_ scene: UIScene) {
         // Called as the scene is being released by the system.
         // This occurs shortly after the scene enters the background, or when its session is discarded.

@@ -38,7 +38,7 @@ final class HomePresenterImpl {
                 }
             }
         } else {
-            networkManager.request(.newsList(query: "apple")) { [weak self] (result: Result<NewsResponse, APIError>) in
+            networkManager.request(.everything(query: nil)) { [weak self] (result: Result<NewsResponse, APIError>) in
                 guard let self else { return }
                 
                 switch result {
@@ -52,7 +52,7 @@ final class HomePresenterImpl {
     }
     
     private func searchNews(query: String) {
-        networkManager.request(.newsList(query: query)) { [weak self] (result: Result<NewsResponse, APIError>) in
+        networkManager.request(.everything(query: query)) { [weak self] (result: Result<NewsResponse, APIError>) in
             guard let self else { return }
             
             switch result {

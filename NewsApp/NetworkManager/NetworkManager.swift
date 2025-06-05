@@ -55,6 +55,9 @@ final class NetworkManager {
     }
 }
 
+
+// early realizations:
+
 /*
 enum ObtainNewsResult {
     case success(articles: [Article])

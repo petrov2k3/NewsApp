@@ -27,7 +27,7 @@ final class HomeViewControllerImpl: UIViewController {
         let search = UISearchController(searchResultsController: nil)
         
         search.obscuresBackgroundDuringPresentation = false
-        search.searchBar.placeholder = "Пошук новин"
+        search.searchBar.placeholder = "Search for news"
         
         search.searchBar.delegate = self
         
@@ -75,7 +75,7 @@ final class HomeViewControllerImpl: UIViewController {
     //MARK: - Setup UI
     private func configureView() {
         view.backgroundColor = .systemBackground
-        navigationItem.title = category?.capitalized ?? "Головна"
+        navigationItem.title = category?.capitalized ?? "Home"
     }
     
     private func setupTableView() {
