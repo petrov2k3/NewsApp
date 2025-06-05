@@ -16,7 +16,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let window = UIWindow(windowScene: windowScene)
         
         //MARK: - ViewContollers
-        let homeVC = HomeViewController() // start screen
+        let homeVC = makeHomeViewController() // start screen
         let categoriesVC = makeCategoriesViewController()
         
         //MARK: - Navigation
@@ -45,6 +45,15 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window.makeKeyAndVisible()
     }
 
+    private func makeHomeViewController() -> UIViewController {
+        let presenter = HomePresenterImpl(category: nil)
+        let viewController = HomeViewControllerImpl(category: nil, presenter: presenter)
+        
+        presenter.setupView(viewController)
+        
+        return viewController
+    }
+    
     private func makeCategoriesViewController() -> UIViewController {
         let presenter = CategoriesPresenterImpl()
         let viewController = CategoriesViewControllerImpl(presenter: presenter)

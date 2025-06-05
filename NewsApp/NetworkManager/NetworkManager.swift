@@ -11,9 +11,9 @@ final class NetworkManager {
     static let shared = NetworkManager()
     private init() {}
     
-    func request<T: Decodable>(
+    func request<NewsResponse: Decodable>(
         _ endpoint: APIEndpoint,
-        completion: @escaping (Result<T, APIError>) -> Void
+        completion: @escaping (Result<NewsResponse, APIError>) -> Void
     ) {
         let request = endpoint.urlRequest
         
@@ -41,7 +41,7 @@ final class NetworkManager {
             do {
                 //print(String(data: data, encoding: .utf8) ?? "Failed to print raw JSON")
 
-                let decoded = try JSONDecoder().decode(T.self, from: data)
+                let decoded = try JSONDecoder().decode(NewsResponse.self, from: data)
                 DispatchQueue.main.async {
                     completion(.success(decoded))
                 }
@@ -116,3 +116,20 @@ final class NetworkManager {
     }
 }
 */
+
+/*
+private func obtainNews() {
+    networkManager.obtainNews { [weak self] result in
+        switch result {
+        case .success(let articles):
+            self?.dataSource = articles
+            
+            DispatchQueue.main.async { // code duplication?
+                self?.tableView.reloadData()
+            }
+        case .failure(let error):
+            print("News loading error: \(error.localizedDescription)")
+        }
+    }
+}
+ */

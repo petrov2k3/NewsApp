@@ -71,6 +71,16 @@ final class CategoriesViewControllerImpl: UIViewController {
             tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
         ])
     }
+    
+    //MARK: - Private methods
+    private func makeHomeViewController(for category: String) -> UIViewController {
+        let presenter = HomePresenterImpl(category: category)
+        let viewController = HomeViewControllerImpl(category: category, presenter: presenter)
+        
+        presenter.setupView(viewController)
+        
+        return viewController
+    }
 }
 
 //MARK: - UITableViewDataSource & UITableViewDelegate
@@ -97,7 +107,7 @@ extension CategoriesViewControllerImpl: UITableViewDataSource, UITableViewDelega
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let selectedCategory = presenter.didSelectCategory(at: indexPath.row)
-        let homeVC = HomeViewController(category: selectedCategory)
+        let homeVC = makeHomeViewController(for: selectedCategory)
          
         navigationController?.pushViewController(homeVC, animated: true)
         

@@ -7,13 +7,20 @@
 
 import UIKit
 
-class HomeViewController: UIViewController {
+// MARK: - Protocol
+protocol HomeViewController: AnyObject {
+    func showArticles(_ articles: [Article])
+    func showError(_ message: String)
+}
+
+// MARK: - Implementation
+final class HomeViewControllerImpl: UIViewController {
     
     // MARK: - Properties
+    private let presenter: HomePresenter
     private let cellIdentifier = "NewsCell"
     private let category: String?
     private var dataSource = [Article]()
-    //let networkManager = NetworkManager()
     
     // MARK: - UI
     private lazy var searchController: UISearchController = {
@@ -40,9 +47,10 @@ class HomeViewController: UIViewController {
     }()
     
     //MARK: - Inits
-    init(category: String? = nil) {
+    init(category: String? = nil, presenter: HomePresenter) {
         self.category = category
-        super.init(nibName: nil, bundle: nil)
+        self.presenter = presenter
+        super.init(nibName: nil, bundle: Bundle.main)
     }
     
     required init?(coder: NSCoder) {
@@ -55,7 +63,7 @@ class HomeViewController: UIViewController {
 
         configureView()
         setupTableView()
-        obtainNews()
+        presenter.viewDidLoad()
         
         //search
         if category == nil {
@@ -83,53 +91,11 @@ class HomeViewController: UIViewController {
             tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
         ])
     }
-    
-    /*
-    private func obtainNews() {
-        networkManager.obtainNews { [weak self] result in
-            switch result {
-            case .success(let articles):
-                self?.dataSource = articles
-                
-                DispatchQueue.main.async { // code duplication?
-                    self?.tableView.reloadData()
-                }
-            case .failure(let error):
-                print("News loading error: \(error.localizedDescription)")
-            }
-        }
-    }
-     */
-    
-    //TODO: move to its presenter (next goal)
-    private func obtainNews() {
-        if let category = category {
-            NetworkManager.shared.request(.topHeadlines(category: category)) { [weak self] (result: Result<NewsResponse, APIError>) in
-                switch result {
-                case .success(let response):
-                    self?.dataSource = response.articles
-                    self?.tableView.reloadData()
-                case .failure(let error):
-                    print("Error loading news by category:", error)
-                }
-            }
-        } else {
-            NetworkManager.shared.request(.newsList(query: "apple")) { [weak self] (result: Result<NewsResponse, APIError>) in
-                switch result {
-                case .success(let response):
-                    self?.dataSource = response.articles
-                    self?.tableView.reloadData()
-                case .failure(let error):
-                    print("Error loading general news:", error)
-                }
-            }
-        }
-    }
 }
 
 //MARK: - UITableViewDataSource & UITableViewDelegate
 
-extension HomeViewController: UITableViewDataSource, UITableViewDelegate {
+extension HomeViewControllerImpl: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return dataSource.count
@@ -159,23 +125,27 @@ extension HomeViewController: UITableViewDataSource, UITableViewDelegate {
 
 //MARK: - UISearchBarDelegate
 
-extension HomeViewController: UISearchBarDelegate {
+extension HomeViewControllerImpl: UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         guard let query = searchBar.text?.trimmingCharacters(in: .whitespacesAndNewlines),
               !query.isEmpty else {
             return
         }
         
-        NetworkManager.shared.request(.newsList(query: query)) { [weak self] (result: Result<NewsResponse, APIError>) in
-            switch result {
-            case .success(let response):
-                self?.dataSource = response.articles
-                self?.tableView.reloadData()
-            case .failure(let error):
-                print("Search API error:", error)
-            }
-        }
-        
+        presenter.didSearch(query: query)
         searchBar.resignFirstResponder() // hides keyboard
+    }
+}
+
+//MARK: - HomeViewController
+extension HomeViewControllerImpl: HomeViewController {
+    func showArticles(_ articles: [Article]) {
+        self.dataSource = articles
+        tableView.reloadData()
+    }
+    
+    func showError(_ message: String) {
+        print("Error: ", message)
+        // maybe show alert
     }
 }
